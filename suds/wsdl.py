@@ -488,7 +488,7 @@ class PortType(NamedObject):
             if op.input is None:
                 op.input = Message(Element('no-input'), definitions)
             else:
-                qref = qualify(op.input, self.root, definitions.tns)
+                qref = qualify(op.input, self.root, definitions.tns, op.tns if op.tns else None)
                 msg = definitions.messages.get(qref)
                 if msg is None:
                     raise Exception("msg '%s', not-found" % op.input)
@@ -497,14 +497,14 @@ class PortType(NamedObject):
             if op.output is None:
                 op.output = Message(Element('no-output'), definitions)
             else:
-                qref = qualify(op.output, self.root, definitions.tns)
+                qref = qualify(op.output, self.root, definitions.tns, op.tns if op.tns else None)
                 msg = definitions.messages.get(qref)
                 if msg is None:
                     raise Exception("msg '%s', not-found" % op.output)
                 else:
                     op.output = msg
             for f in op.faults:
-                qref = qualify(f.message, self.root, definitions.tns)
+                qref = qualify(f.message, self.root, definitions.tns, op.tns if op.tns else None)
                 msg = definitions.messages.get(qref)
                 if msg is None:
                     raise Exception, "msg '%s', not-found" % f.message
@@ -872,7 +872,7 @@ class Service(NamedObject):
         """
         filtered = []
         for p in self.ports:
-            ref = qualify(p.binding, self.root, definitions.tns)
+            ref = qualify(p.binding, self.root, definitions.tns, self.qname if self.qname else None)
             binding = definitions.bindings.get(ref)
             if binding is None:
                 raise Exception("binding '%s', not-found" % p.binding)

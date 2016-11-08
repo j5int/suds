@@ -29,7 +29,7 @@ from suds.sax import Namespace, splitPrefix
 log = getLogger(__name__)
 
 
-def qualify(ref, resolvers, defns=Namespace.default):
+def qualify(ref, resolvers, defns=Namespace.default, reqns=None):
     """
     Get a reference that is I{qualified} by namespace.
     @param ref: A referenced schema type name.
@@ -44,7 +44,7 @@ def qualify(ref, resolvers, defns=Namespace.default):
     """
     ns = None
     p, n = splitPrefix(ref)
-    if p is not None:
+    if p is not None and reqns is None:
         if not isinstance(resolvers, (list, tuple)):
             resolvers = (resolvers,)
         for r in resolvers:
@@ -54,6 +54,8 @@ def qualify(ref, resolvers, defns=Namespace.default):
                 break
         if ns is None:
             raise Exception('prefix (%s) not resolved' % p)
+    elif p is not None and reqns is not None:
+        return (n, reqns[1])
     else:
         ns = defns
     return (n, ns[1])
